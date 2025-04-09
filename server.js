@@ -1,29 +1,28 @@
 const express = require("express");
-const app = express();
-const mongoose = require("mongoose");
 const cors = require("cors");
+const mongoose = require("mongoose");
 const dotenv = require("dotenv");
+
 dotenv.config();
 
+const app = express();
 app.use(cors());
 app.use(express.json());
 
-// Import Routes
 const authRoutes = require("./routes/authRoutes");
-app.use("/api/auth", authRoutes); // ✅ This mounts /api/auth/login
+const userRoutes = require("./routes/userRoutes"); // if you have it
 
-// Test route
+app.use("/api/auth", authRoutes);
+app.use("/api/users", userRoutes); // if you're using user routes
+
+// Optional test route
 app.get("/api/users/test", (req, res) => {
-  res.json({ message: "✅ Backend working" });
+  res.json({ message: "✅ Test route working!" });
 });
 
-// Connect to MongoDB
 mongoose
-  .connect(process.env.MONGO_URI, {
-    useNewUrlParser: true,
-    useUnifiedTopology: true,
-  })
+  .connect(process.env.MONGO_URI)
   .then(() =>
     app.listen(5000, () => console.log("🚀 Server started on port 5000"))
   )
-  .catch((err) => console.error("MongoDB connection error:", err));
+  .catch((err) => console.error("MongoDB Error:", err));

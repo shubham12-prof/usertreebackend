@@ -10,10 +10,10 @@ app.use(cors());
 app.use(express.json());
 
 const authRoutes = require("./routes/authRoutes");
-const userRoutes = require("./routes/userRoutes"); // if you have it
+const userRoutes = require("./routes/userRoutes"); // ✅ use only this
 
 app.use("/api/auth", authRoutes);
-app.use("/api/users", userRoutes); // if you're using user routes
+app.use("/api/users", userRoutes); // ✅ do not duplicate
 
 // Optional test route
 app.get("/api/users/test", (req, res) => {

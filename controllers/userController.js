@@ -27,4 +27,16 @@ const getUserTree = async (req, res) => {
   }
 };
 
-module.exports = { getUserTree };
+const getMyChildren = async (req, res) => {
+  try {
+    const userId = req.user.id;
+    const children = await User.find({ sponsorId: userId }); // or whatever field you're using to link parent-child
+    res.json(children);
+  } catch (err) {
+    res
+      .status(500)
+      .json({ message: "Failed to fetch child users", error: err.message });
+  }
+};
+
+module.exports = { getUserTree, getMyChildren };

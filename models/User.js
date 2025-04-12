@@ -23,7 +23,7 @@ const userSchema = new mongoose.Schema(
     panNo: String,
     aadhaarNo: String,
     sponsorName: String,
-    sponsorId: String,
+    sponsorId: { type: mongoose.Schema.Types.ObjectId, ref: "User" },
     password: String,
     parent: { type: mongoose.Schema.Types.ObjectId, ref: "User" },
     children: [{ type: mongoose.Schema.Types.ObjectId, ref: "User" }],

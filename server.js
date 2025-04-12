@@ -1,28 +1,31 @@
 const express = require("express");
-const cors = require("cors");
 const mongoose = require("mongoose");
 const dotenv = require("dotenv");
+const cors = require("cors");
+const userRoutes = require("./routes/userRoutes");
+const authRoutes = require("./routes/authRoutes"); // Add this import for authentication routes
 
 dotenv.config();
 
 const app = express();
-app.use(cors());
+
+// Middleware
 app.use(express.json());
+app.use(cors());
 
-const authRoutes = require("./routes/authRoutes");
-const userRoutes = require("./routes/userRoutes"); // ✅ use only this
+// Routes
+app.use("/api/users", userRoutes); // User-related routes
+app.use("/api/auth", authRoutes); // Authentication routes
 
-app.use("/api/auth", authRoutes);
-app.use("/api/users", userRoutes); // ✅ do not duplicate
-
-// Optional test route
-app.get("/api/users/test", (req, res) => {
-  res.json({ message: "✅ Test route working!" });
-});
-
+// Connect to MongoDB
 mongoose
   .connect(process.env.MONGO_URI)
   .then(() =>
     app.listen(5000, () => console.log("🚀 Server started on port 5000"))
   )
-  .catch((err) => console.error("MongoDB Error:", err));
+  .catch((err) => console.error("MongoDB connection error:", err));
+
+// Basic route
+app.get("/", (req, res) => {
+  res.send("Welcome to the user tree system!");
+});

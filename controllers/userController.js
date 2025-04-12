@@ -5,7 +5,7 @@ const User = require("../models/User");
 const getUserTree = async (req, res) => {
   try {
     const buildTree = async (userId) => {
-      const user = await User.findById(userId).populate("children").lean();
+      const user = await User.findById(userId).populate("children");
       if (!user) return null;
 
       const children = await Promise.all(

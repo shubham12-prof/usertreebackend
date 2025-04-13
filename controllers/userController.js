@@ -35,7 +35,8 @@ const addUser = async (req, res) => {
   try {
     const parent = req.user;
     const parentId = parent._id;
-    let {
+
+    const {
       name,
       fatherName,
       dob,
@@ -57,7 +58,6 @@ const addUser = async (req, res) => {
       panNo,
       aadhaarNo,
       sponsorName,
-      sponsorId,
       password,
     } = req.body;
 
@@ -65,19 +65,15 @@ const addUser = async (req, res) => {
       return res.status(400).json({ message: "Password is required" });
     }
 
-    // Check if the parent already has 2 children
+    // ✅ Step 1: Check if this parent already has 2 children
     const childCount = await User.countDocuments({ parent: parentId });
     if (childCount >= 2) {
       return res.status(400).json({ message: "You can only add 2 users." });
     }
 
-    // Fallback sponsorId to parentId if not provided or invalid
-    if (!sponsorId || !mongoose.Types.ObjectId.isValid(sponsorId)) {
-      sponsorId = parentId;
-    }
-
     const hashedPassword = await bcrypt.hash(password, 10);
 
+    // ✅ Step 2: Create new user with parentId as both sponsor and parent
     const newUser = await User.create({
       name,
       fatherName,
@@ -100,12 +96,13 @@ const addUser = async (req, res) => {
       panNo,
       aadhaarNo,
       sponsorName,
-      sponsorId,
-      password: hashedPassword,
+      sponsorId: parentId, // ✅ Always use parent's ObjectId
       parent: parentId,
       addedBy: parentId,
+      password: hashedPassword,
     });
 
+    // ✅ Step 3: Update parent's children array
     const parentUser = await User.findById(parentId);
     if (!parentUser.children) {
       parentUser.children = [];

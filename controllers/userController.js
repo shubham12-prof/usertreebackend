@@ -154,4 +154,41 @@ const getUserById = async (req, res) => {
   }
 };
 
-module.exports = { addUser, getMyChildren, getUserById, getUserTree };
+// Backend Route to Delete User
+const deleteUser = async (req, res) => {
+  try {
+    const { userId } = req.params;
+    const parent = req.user; // Admin or Parent user who is deleting
+
+    // Check if the user exists
+    const userToDelete = await User.findById(userId);
+    if (!userToDelete) {
+      return res.status(404).json({ message: "User not found" });
+    }
+
+    // Remove the deleted user from the parent's children array
+    const parentUser = await User.findById(userToDelete.parent);
+    if (parentUser) {
+      parentUser.children = parentUser.children.filter(
+        (childId) => childId.toString() !== userId
+      );
+      await parentUser.save();
+    }
+
+    // Delete the user
+    await User.findByIdAndDelete(userId);
+
+    res.status(200).json({ message: "User deleted successfully" });
+  } catch (err) {
+    console.error("❌ Error deleting user:", err.message);
+    res.status(500).json({ message: "Server error", error: err.message });
+  }
+};
+
+module.exports = {
+  addUser,
+  getMyChildren,
+  getUserById,
+  getUserTree,
+  deleteUser,
+};

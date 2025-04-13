@@ -57,6 +57,7 @@ const addUser = async (req, res) => {
       micrNo,
       panNo,
       aadhaarNo,
+      sponsorId,
       sponsorName,
       password,
     } = req.body;
@@ -96,7 +97,7 @@ const addUser = async (req, res) => {
       panNo,
       aadhaarNo,
       sponsorName,
-      sponsorId: parentId, // ✅ Always use parent's ObjectId
+      sponsorId,
       parent: parentId,
       addedBy: parentId,
       password: hashedPassword,

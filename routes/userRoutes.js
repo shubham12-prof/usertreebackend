@@ -12,7 +12,7 @@ const router = express.Router();
 // Routes
 router.post("/add-user", authMiddleware, addUser); // Add authMiddleware here
 router.get("/my-children", authMiddleware, getMyChildren); // Add authMiddleware here
-router.get("/:id", authMiddleware, getUserById); // Add authMiddleware here
 router.get("/tree", authMiddleware, getUserTree); // Add authMiddleware here
+router.get("/:id", authMiddleware, getUserById); // Add authMiddleware here
 
 module.exports = router;

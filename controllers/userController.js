@@ -21,8 +21,10 @@ const getUserTree = async (req, res) => {
     };
 
     const tree = await buildTree(req.user.id);
+    if (!tree) return res.status(404).json({ message: "User not found" });
     res.json(tree);
   } catch (err) {
+    console.error("Tree error:", err); // 👈 helpful for debugging
     res
       .status(500)
       .json({ message: "Error building user tree", error: err.message });
@@ -31,9 +33,9 @@ const getUserTree = async (req, res) => {
 
 const addUser = async (req, res) => {
   try {
-    const parent = req.user; // Full user object from middleware
+    const parent = req.user;
     const parentId = parent._id;
-    const {
+    let {
       name,
       fatherName,
       dob,
@@ -69,6 +71,11 @@ const addUser = async (req, res) => {
       return res.status(400).json({ message: "You can only add 2 users." });
     }
 
+    // Fallback sponsorId to parentId if not provided or invalid
+    if (!sponsorId || !mongoose.Types.ObjectId.isValid(sponsorId)) {
+      sponsorId = parentId;
+    }
+
     const hashedPassword = await bcrypt.hash(password, 10);
 
     const newUser = await User.create({
@@ -93,7 +100,7 @@ const addUser = async (req, res) => {
       panNo,
       aadhaarNo,
       sponsorName,
-      sponsorId: sponsorId || parentId,
+      sponsorId,
       password: hashedPassword,
       parent: parentId,
       addedBy: parentId,
